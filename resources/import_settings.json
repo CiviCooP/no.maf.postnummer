@@ -1,0 +1,7 @@
+{
+  "import_location":{
+    "name":"import_location",
+    "label":"Folder to get CSV files from",
+    "value":"\/var\/www\/mafdev\/sites\/default\/files\/civicrm\/csv_load\/"
+  }
+}
