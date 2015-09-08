@@ -7,8 +7,8 @@
  */
 class CRM_Postnummer_FileCsvDataSource extends CRM_Postnummer_DataSource {
 
-  protected $default_delimiter = ';';
-  protected $default_encoding  = 'UTF8';
+  protected $defaultDelimiter = ';';
+  protected $defaultEncoding  = 'UTF8';
   
   /** this will hold the open file */
   protected $reader  = NULL;
@@ -20,7 +20,7 @@ class CRM_Postnummer_FileCsvDataSource extends CRM_Postnummer_DataSource {
   protected $next    = NULL;
 
   /** this will hold the line number */
-  protected $line_nr = 0;
+  public $lineNr = 0;
 
   /** this will hold the logging messages */
   public $logger = array();
@@ -31,13 +31,12 @@ class CRM_Postnummer_FileCsvDataSource extends CRM_Postnummer_DataSource {
    * @access public
    */
   public function reset() {
-    $config = CRM_Postnummer_Config::singleton();
     $this->setSeparator();
     // try loading the given file
     $this->reader  = fopen($this->uri, 'r');
     $this->header  = NULL;
     $this->next    = NULL;
-    $this->line_nr = 0;
+    $this->lineNr = 0;
 
     if (empty($this->reader)) {
       $this->logger[] = "Unable to read file ".$this->uri;
@@ -46,7 +45,7 @@ class CRM_Postnummer_FileCsvDataSource extends CRM_Postnummer_DataSource {
     }
 
     // read header
-    $this->header = fgetcsv($this->reader, 0, $this->default_delimiter);
+    $this->header = fgetcsv($this->reader, 0, $this->defaultDelimiter);
     if ($this->header == NULL) {
       $this->logger[] = $this->uri." does not contain headers";
       $this->reader = NULL;
@@ -96,8 +95,8 @@ class CRM_Postnummer_FileCsvDataSource extends CRM_Postnummer_DataSource {
 
     // read next data blob
     $this->next = NULL;
-    $this->line_nr += 1;
-    $data = fgetcsv($this->reader, 0, $this->default_delimiter);
+    $this->lineNr += 1;
+    $data = fgetcsv($this->reader, 0, $this->defaultDelimiter);
     if ($data == NULL) {
       // there is no more records => reset
       fclose($this->reader);
@@ -113,7 +112,7 @@ class CRM_Postnummer_FileCsvDataSource extends CRM_Postnummer_DataSource {
       $this->next = $this->applyMapping($record);
 
       // set ID if not defined by file/mapping
-      if (empty($this->next['__id'])) $this->next['__id'] = $this->line_nr;      
+      if (empty($this->next['__id'])) $this->next['__id'] = $this->lineNr;
     }
   }
   /**
@@ -131,9 +130,9 @@ class CRM_Postnummer_FileCsvDataSource extends CRM_Postnummer_DataSource {
      */
     if ($testRow = fgetcsv($testSeparator, 0, ';')) {
       if (!isset($testRow[1])) {
-        $this->default_delimiter = ",";
+        $this->defaultDelimiter = ",";
       } else {
-        $this->default_delimiter = ";";
+        $this->defaultDelimiter = ";";
       }
     }
     fclose($testSeparator);

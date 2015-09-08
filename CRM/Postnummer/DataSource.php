@@ -28,12 +28,8 @@ abstract class CRM_Postnummer_DataSource {
   public function __construct($uri, $mapping = NULL) {
     $this->uri = $uri;
     if ($mapping == NULL) {
-      // load default mapping
-      // TODO: move to config
-      $settings = civicrm_api3('Setting', 'Getsingle', array());
-      $mappings_path = $settings['extensionsDir'].'/no.maf.postnummer/resources/default_mapping.json';
-      $mappings_content = file_get_contents($mappings_path);
-      $mapping = json_decode($mappings_content, true);
+      $config = CRM_Postnummer_Config::singleton();
+      $mapping = $config->getDefaultMapping();
     }
     $this->mapping = $mapping;
   }
@@ -68,19 +64,19 @@ abstract class CRM_Postnummer_DataSource {
    * @access protected
    */
   protected function applyMapping($record, $restrict=false) {
-    $new_record = array();
+    $newRecord = array();
     foreach ($record as $key => $value) {
       if (isset($this->mapping[$key])) {
-        $new_key = $this->mapping[$key];
+        $newKey = $this->mapping[$key];
       } else {
         if ($restrict) {
           continue;
         } else {
-          $new_key = $key;
+          $newKey = $key;
         }
       }
-      $new_record[$new_key] = $value;
+      $newRecord[$newKey] = $value;
     }
-    return $new_record;
+    return $newRecord;
   }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/postnummer</path>
+    <page_callback>CRM_Postnummer_Form_Postnummer</page_callback>
+    <title>Postnummer</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/postnummerlist</path>
+    <page_callback>CRM_Postnummer_Page_Postnummer</page_callback>
+    <title>Postnummer</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>

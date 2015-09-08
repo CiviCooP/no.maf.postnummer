@@ -1,7 +1,7 @@
 {
-  "Postnummer":"PO Box Number",
+  "Postnummer":"Post Code",
   "Poststed":"City",
-  "Kommunenummer":"Quarter Number",
-  "Kommunenavn":"Quarter Name",
+  "Kommunenummer":"Community Number",
+  "Kommunenavn":"Community Name",
   "Kategori":"Category"
 }

@@ -126,5 +126,5 @@ function postnummer_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _postnummer_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
-// TODO: add import settings to administer/address settings - location where csv file is found
-
+// TODO add menu option
+// TODO add jQuery to populate city and county

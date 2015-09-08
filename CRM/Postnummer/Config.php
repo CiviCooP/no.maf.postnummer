@@ -14,6 +14,7 @@ class CRM_Postnummer_Config {
   protected $importSettings = array();
   protected $translatedStrings = array();
   protected $counties = array();
+  protected $defaultMapping = array();
 
   /**
    * Constructor method
@@ -26,6 +27,7 @@ class CRM_Postnummer_Config {
     $this->setImportSettings();
     $this->setTranslationFile();
     $this->setCounties();
+    $this->setDefaultMapping();
   }
 
   /**
@@ -36,6 +38,16 @@ class CRM_Postnummer_Config {
    */
   public function getImportSettings() {
     return $this->importSettings;
+  }
+
+  /**
+   * Method to retrieve default mapping
+   *
+   * @return array
+   * @access public
+   */
+  public function getDefaultMapping() {
+    return $this->defaultMapping;
   }
 
   /**
@@ -161,6 +173,15 @@ class CRM_Postnummer_Config {
 
     } else {
       $this->translatedStrings = array();
+    }
+  }
+  protected function setDefaultMapping() {
+    $jsonFile = $this->resourcesPath.'default_mapping.json';
+    if (file_exists($jsonFile)) {
+      $mappingJson = file_get_contents($jsonFile);
+      $this->defaultMapping = json_decode($mappingJson, true);
+    } else {
+      throw new Exception('Could not load default mappings for extension, contact your system administrator');
     }
   }
 }
