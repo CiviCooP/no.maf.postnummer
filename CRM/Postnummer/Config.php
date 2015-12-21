@@ -11,6 +11,7 @@ class CRM_Postnummer_Config {
   private static $_singleton;
 
   protected $resourcesPath = null;
+  protected $importPath = null;
   protected $importSettings = array();
   protected $translatedStrings = array();
   protected $defaultMapping = array();
@@ -24,7 +25,7 @@ class CRM_Postnummer_Config {
     $settings = civicrm_api3('Setting', 'Getsingle', array());
     $this->resourcesPath = $settings['extensionsDir'].'/no.maf.postnummer/resources/';
     $this->setImportSettings();
-    $this->setTranslationFile();
+    $this->importPath = $settings['customFileUploadDir'].$this->importSettings['import_location']['value'];
     $this->setDefaultMapping();
   }
 
@@ -49,31 +50,13 @@ class CRM_Postnummer_Config {
   }
 
   /**
-   * This method offers translation of strings, such as
-   *  - activity subjects
-   *  - ...
-   *
-   * @param string $string
-   * @return string
-   * @access public
-   */
-  public function translate($string) {
-    if (isset($this->translatedStrings[$string])) {
-      return $this->translatedStrings[$string];
-    } else {
-      return ts($string);
-    }
-  }
-
-  /**
    * Method to retrieve import file location
    *
    * @return string
    * @access public
    */
   public function getImportFileLocation() {
-    $importSettings = $this->getImportSettings();
-    return $importSettings['import_location']['value'];
+    return $this->importPath;
   }
 
   /**
@@ -129,24 +112,6 @@ class CRM_Postnummer_Config {
     }
     $importSettingsJson = file_get_contents($jsonFile);
     $this->importSettings = json_decode($importSettingsJson, true);
-  }
-
-  /**
-   * Protected function to load translation json based on local language
-   *
-   * @access protected
-   */
-  protected function setTranslationFile() {
-    // TODO: get some translations from Steinar and explain translation settings
-    $config = CRM_Core_Config::singleton();
-    $jsonFile = $this->resourcesPath.$config->lcMessages.'_translate.json';
-    if (file_exists($jsonFile)) {
-      $translateJson = file_get_contents($jsonFile);
-      $this->translatedStrings = json_decode($translateJson, true);
-
-    } else {
-      $this->translatedStrings = array();
-    }
   }
 
   /**

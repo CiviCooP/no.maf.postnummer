@@ -6,7 +6,6 @@
 class CRM_Postnummer_Form_Search_Postnummer extends CRM_Contact_Form_Search_Custom_Base implements CRM_Contact_Form_Search_Interface {
 
   private $citiesList = array();
-  private $postCodeList = array();
 
   function __construct(&$formValues) {
     parent::__construct($formValues);
@@ -21,10 +20,9 @@ class CRM_Postnummer_Form_Search_Postnummer extends CRM_Contact_Form_Search_Cust
    */
   function buildForm(&$form) {
     CRM_Utils_System::setTitle(ts('Find Post Code'));
-    $config = CRM_Postnummer_Config::singleton();
 
-    $form->add('text', 'post_code', $config->translate('Post Code'));
-    $form->add('select', 'post_city', $config->translate('Post City'), $this->citiesList);
+    $form->add('text', 'post_code', 'Post Code');
+    $form->add('select', 'post_city', 'Post City', $this->citiesList);
 
     $defaults = $this->retrieveDefaultValues();
     if (!empty($defaults)) {
@@ -40,13 +38,12 @@ class CRM_Postnummer_Form_Search_Postnummer extends CRM_Contact_Form_Search_Cust
    */
   function &columns() {
     // return by reference
-    $config = CRM_Postnummer_Config::singleton();
     $columns = array(
-      $config->translate('Post Code') => 'post_code',
-      $config->translate('City') => 'post_city',
-      $config->translate('Community Number') => 'community_number',
-      $config->translate('Community Name') => 'community_name',
-      $config->translate('Category') => 'category',
+      'Post Code' => 'post_code',
+      'City' => 'post_city',
+      'Community Number' => 'community_number',
+      'Community Name' => 'community_name',
+      'Category' => 'category',
     );
     return $columns;
   }

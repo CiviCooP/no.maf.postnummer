@@ -15,15 +15,15 @@ class CRM_Postnummer_Form_Postnummer extends CRM_Core_Form {
 
     $this->postCode = CRM_Utils_Request::retrieve('pc', 'String');
     $config = CRM_Postnummer_Config::singleton();
-    CRM_Utils_System::setTitle($config->translate("Post Code"));
-    $this->assign('formHeader', $config->translate("Edit Post Code")." ".$this->postCode);
+    CRM_Utils_System::setTitle("Post Code");
+    $this->assign('formHeader', "Edit Post Code"." ".$this->postCode);
 
     // add form elements
     $this->add('hidden', 'post_code');
-    $this->add('text', 'post_city', $config->translate('Post City'), array(), true);
-    $this->add('text', 'community_number', $config->translate('Community Number'), array(), true);
-    $this->add('text', 'community_name', $config->translate('Community Name'), array(), true);
-    $this->add('text', 'category', $config->translate('Category'), array('maxlength' => 1, 'size' => 1), true);
+    $this->add('text', 'post_city', 'Post City', array(), true);
+    $this->add('text', 'community_number', 'Community Number', array(), true);
+    $this->add('text', 'community_name', 'Community Name', array(), true);
+    $this->add('text', 'category', 'Category', array('maxlength' => 1, 'size' => 1), true);
     $this->addButtons(array(
         array('type' => 'next', 'name' => ts('Save'), 'isDefault' => true,)));
     // export form elements

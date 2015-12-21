@@ -15,8 +15,7 @@
  * @access public
  */
 function civicrm_api3_postnummer_import($params) {
-  // TODO empty file before run
-  $logMessages = array();
+  CRM_Core_DAO::executeQuery('TRUNCATE TABLE civicrm_post_nummer');
   $config = CRM_Postnummer_Config::singleton();
 
   if (isset($params['source_folder'])) {
@@ -33,23 +32,14 @@ function civicrm_api3_postnummer_import($params) {
   // now run the actual import
   foreach ($files as $sourceFile) {
     try {
-      if (!$sourceFile) {
-        $logMessages[] = $config->translate("No source files found");
-      } else {
+      if ($sourceFile) {
         $dataSource = new CRM_Postnummer_FileCsvDataSource($sourceFile);
         CRM_Postnummer_RecordHandler::processDataSource($dataSource);
-        $logMessages = $logMessages + $dataSource->logger;
-        $logMessages[] = $config->translate("Imported file")." ".$sourceFile." ".$config->translate("successfully");
       }
     } catch (Exception $ex) {
-      // whole import was aborted...
-      $logMessages[] = $config->translate("Aborted import of file")." ".$sourceFile.", ".
-        $config->translate("Exception was").": ".$ex->getMessage();
-      }
+      throw new API_Exception('Could not import postnummer file, error : '.$ex->getMessage());
     }
-  return setResult($logMessages);
-}
-function setResult($logMessages) {
-  //TODO implement
+  }
+  return civicrm_api3_create_success(array(), $params, 'Postnummer', 'Import');
 }
 
