@@ -30,7 +30,7 @@ class CRM_Postnummer_RecordHandler {
       'category' => $record['Category'],
       'post_code' => $record['Post Code']
     );
-    CRM_Postnummer_BAO_Postnummer::add($params);
+    civicrm_api3('Postnummer', 'Create', $params);
   }
 
   /** 
