@@ -11,7 +11,6 @@ class CRM_Postnummer_Form_Search_Postnummer extends CRM_Contact_Form_Search_Cust
   function __construct(&$formValues) {
     parent::__construct($formValues);
     $this->getDistinctCities();
-    $this->getDistinctPostCodes();
   }
 
   /**
@@ -24,31 +23,14 @@ class CRM_Postnummer_Form_Search_Postnummer extends CRM_Contact_Form_Search_Cust
     CRM_Utils_System::setTitle(ts('Find Post Code'));
     $config = CRM_Postnummer_Config::singleton();
 
-    $form->add('select', 'post_code', $config->translate('Post Code'), $this->postCodeList);
+    $form->add('text', 'post_code', $config->translate('Post Code'));
     $form->add('select', 'post_city', $config->translate('Post City'), $this->citiesList);
 
-    // Optionally define default search values
-    $form->setDefaults(array(
-      'post_code' => '',
-      'post_city' => NULL,
-    ));
-
-    /**
-     * if you are using the standard template, this array tells the template what elements
-     * are part of the search criteria
-     */
+    $defaults = $this->retrieveDefaultValues();
+    if (!empty($defaults)) {
+      $form->setDefaults($defaults);
+    }
     $form->assign('elements', array('post_code', 'post_city'));
-  }
-
-  /**
-   * Get a list of summary data points
-   *
-   * @return mixed; NULL or array with keys:
-   *  - summary: string
-   *  - total: numeric
-   */
-  function summary() {
-    return NULL;
   }
 
   /**
@@ -79,7 +61,15 @@ class CRM_Postnummer_Form_Search_Postnummer extends CRM_Contact_Form_Search_Cust
    * @return string, sql
    */
   function all($offset = 0, $rowcount = 0, $sort = NULL, $includeContactIDs = FALSE, $justIDs = FALSE) {
-
+    $session = CRM_Core_Session::singleton();
+    $userContext = $this->_formValues['entryURL'];
+    if (!empty($this->_formValues['post_city'])) {
+      $userContext .= "&dc=".$this->_formValues['post_city'];
+    }
+    if (!empty($this->_formValues['post_code'])) {
+      $userContext .= "&pc=".$this->_formValues['post_code'];
+    }
+    $session->pushUserContext($userContext);
     // delegate to $this->sql(), $this->select(), $this->from(), $this->where(), etc.
     return $this->sql($this->select(), $offset, $rowcount, $sort, FALSE, NULL);
   }
@@ -90,8 +80,25 @@ class CRM_Postnummer_Form_Search_Postnummer extends CRM_Contact_Form_Search_Cust
    * @return string
    */
   function count() {
+    $count = 0;
+    $clause = array();
+    $params = array();
+    if (!empty($this->_formValues['post_code'])) {
+      $count++;
+      $clause[] = "post_code LIKE %".$count;
+      $params[$count] = array($this->_formValues['post_code']."%", 'String');
+    }
+
+    if (!empty($this->_formValues['post_city'])) {
+      $count++;
+      $clause[] = "post_city = %".$count;
+      $params[$count] = array($this->citiesList[$this->_formValues['post_city']], 'String');
+    }
     $query = "SELECT COUNT(DISTINCT(post_code)) AS total FROM civicrm_post_nummer";
-    return CRM_Core_DAO::singleValueQuery($query) ;
+    if (!empty($clause)) {
+      $query .= " WHERE ".implode(" AND ", $clause);
+    }
+    return CRM_Core_DAO::singleValueQuery($query, $params) ;
   }
 
   /**
@@ -119,7 +126,26 @@ class CRM_Postnummer_Form_Search_Postnummer extends CRM_Contact_Form_Search_Cust
    * @return string, sql fragment with conditional expressions
    */
   function where($includeContactIDs = FALSE) {
-    return "";
+    $params = array();
+    $clause = array();
+    $count = 0;
+
+    if (!empty($this->_formValues['post_code'])) {
+      $count++;
+      $clause[] = "post_code LIKE %".$count;
+      $params[$count] = array($this->_formValues['post_code']."%", 'String');
+    }
+
+    if (!empty($this->_formValues['post_city'])) {
+      $count++;
+      $clause[] = "post_city = %".$count;
+      $params[$count] = array($this->citiesList[$this->_formValues['post_city']], 'String');
+    }
+
+    if (!empty($clause)) {
+      $where = implode(' AND ', $clause);
+    }
+    return $this->whereClause($where, $params);
   }
 
   /**
@@ -129,16 +155,6 @@ class CRM_Postnummer_Form_Search_Postnummer extends CRM_Contact_Form_Search_Cust
    */
   function templateFile() {
     return 'CRM/Postnummer/Page/SearchResult.tpl';
-  }
-
-  /**
-   * Modify the content of each row
-   *
-   * @param array $row modifiable SQL result row
-   * @throws exception if function getOptionGroup not found
-   * @return void
-   */
-  function alterRow(&$row) {
   }
 
   /**
@@ -157,19 +173,24 @@ class CRM_Postnummer_Form_Search_Postnummer extends CRM_Contact_Form_Search_Cust
   }
 
   /**
-   * Method to get distinct post codes
+   * Empty function to make sure parent does not disallow query
    *
-   * @return array
-   * @access private
+   * @param $sql
+   * @param bool|FALSE $onlyWhere
    */
-  private function getDistinctPostCodes() {
-    $this->postCodeList[0] = "- all -";
-    $query = "SELECT DISTINCT(post_code) FROM civicrm_post_nummer ORDER BY post_code";
-    $dao = CRM_Core_DAO::executeQuery($query);
-    while ($dao->fetch()) {
-      $this->postCodeList[] = $dao->post_code;
-    }
-  }
   function validateUserSQL(&$sql, $onlyWhere = FALSE) {
+  }
+
+  function retrieveDefaultValues() {
+    $defaults = array();
+    $defaultCode = CRM_Utils_Request::retrieve("pc", "String");
+    $defaultCity = CRM_Utils_Request::retrieve("dc", "String");
+    if (!empty($defaultCity)) {
+      $defaults['post_city'] = $defaultCity;
+    }
+    if (!empty($defaultCode)) {
+      $defaults['post_code'] = $defaultCode;
+    }
+    return $defaults;
   }
 }

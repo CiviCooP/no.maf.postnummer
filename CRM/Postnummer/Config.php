@@ -13,7 +13,6 @@ class CRM_Postnummer_Config {
   protected $resourcesPath = null;
   protected $importSettings = array();
   protected $translatedStrings = array();
-  protected $counties = array();
   protected $defaultMapping = array();
 
   /**
@@ -26,7 +25,6 @@ class CRM_Postnummer_Config {
     $this->resourcesPath = $settings['extensionsDir'].'/no.maf.postnummer/resources/';
     $this->setImportSettings();
     $this->setTranslationFile();
-    $this->setCounties();
     $this->setDefaultMapping();
   }
 
@@ -48,16 +46,6 @@ class CRM_Postnummer_Config {
    */
   public function getDefaultMapping() {
     return $this->defaultMapping;
-  }
-
-  /**
-   * Method to retrieve county codes
-   *
-   * @return array
-   * @access public
-   */
-  public function getCounties() {
-    return $this->counties;
   }
 
   /**
@@ -144,21 +132,6 @@ class CRM_Postnummer_Config {
   }
 
   /**
-   * Method to get counties from json file
-   *
-   * @throws Exception when file not found
-   * @access protected
-   */
-  protected function setCounties() {
-    $jsonFile = $this->resourcesPath.'counties.json';
-    if (!file_exists($jsonFile)) {
-      throw new Exception('Could not load counties configuration file for extension, contact your system administrator!');
-    }
-    $countiesJson = file_get_contents($jsonFile);
-    $this->counties = json_decode($countiesJson, true);
-  }
-
-  /**
    * Protected function to load translation json based on local language
    *
    * @access protected
@@ -175,6 +148,13 @@ class CRM_Postnummer_Config {
       $this->translatedStrings = array();
     }
   }
+
+  /**
+   * Method to set default mapping
+   *
+   * @throws Exception if mapping could not be loaded
+   * @access protected
+   */
   protected function setDefaultMapping() {
     $jsonFile = $this->resourcesPath.'default_mapping.json';
     if (file_exists($jsonFile)) {

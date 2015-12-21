@@ -6,10 +6,4 @@
     <title>Postnummer</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
-  <item>
-    <path>civicrm/postnummerlist</path>
-    <page_callback>CRM_Postnummer_Page_Postnummer</page_callback>
-    <title>Postnummer</title>
-    <access_arguments>access CiviCRM</access_arguments>
-  </item>
 </menu>

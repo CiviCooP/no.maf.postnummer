@@ -1,5 +1,5 @@
 {* HEADER *}
-<h3>{$form_header}</h3>
+<h3>{$formHeader}</h3>
 <div class="crm-block crm-form-block">
   <div class="crm-submit-buttons">
   {include file="CRM/common/formButtons.tpl" location="top"}

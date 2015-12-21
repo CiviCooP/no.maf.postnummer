@@ -126,5 +126,26 @@ function postnummer_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _postnummer_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
-// TODO add menu option
-// TODO add jQuery to populate city and county
+/**
+ * Implements hook_civicrm_alterContent().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterContent
+ */
+function postnummer_civicrm_alterContent(  &$content, $context, $tplName, &$object ) {
+  if ($object instanceof CRM_Contact_Form_Inline_Address) {
+    $locBlockNo = CRM_Utils_Request::retrieve('locno', 'Positive', CRM_Core_DAO::$_nullObject, TRUE, NULL, $_REQUEST);
+    $template = CRM_Core_Smarty::singleton();
+    $template->assign('blockId', $locBlockNo);
+    $content .= $template->fetch('CRM/Postnummer/Page/postnummer_js.tpl');
+  }
+  if ($object instanceof CRM_Contact_Form_Contact) {
+    $template = CRM_Core_Smarty::singleton();
+    $content .= $template->fetch('CRM/Postnummer/Page/postnummer_contact_js.tpl');
+  }
+  if ($object instanceof CRM_Event_Form_ManageEvent_Location || $object instanceof CRM_Event_Form_ManageEvent_EventInfo) {
+    $template = CRM_Core_Smarty::singleton();
+    $content .= $template->fetch('CRM/Postnummer/Page/postnummer_event_location_js.tpl');
+  }
+}
+
+
