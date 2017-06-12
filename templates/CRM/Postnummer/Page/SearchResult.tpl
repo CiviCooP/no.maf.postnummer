@@ -27,7 +27,7 @@
    custom search .php file. If you want a different layout, clone and customize this file and point to new file using
    templateFile() function.*}
 <div class="crm-block crm-form-block crm-contact-custom-search-form-block">
-    <div class="crm-accordion-wrapper crm-custom_search_form-accordion">
+    <div class="crm-accordion-wrapper crm-custom_search_form-accordion {if $rows}collapsed{/if}">
         <div class="crm-accordion-header crm-master-accordion-header">
           {ts}Edit Search Criteria{/ts}
         </div><!-- /.crm-accordion-header -->
@@ -49,6 +49,12 @@
 
 {if $rowsEmpty || $rows}
 <div class="crm-content-block">
+    <div class="crm-form-block crm-block">
+        <div class="crm-submit-buttons">
+        <a href="{crmURL p='civicrm/postnummer' q="reset=1&action=add"}" class="button action-item">{ts}Add a post code{/ts}</a>
+        </div>
+    </div>
+
     {if $rowsEmpty}
         {include file="CRM/Postnummer/Page/EmptyResults.tpl"}
     {/if}
@@ -57,7 +63,7 @@
       <div class="crm-results-block">
           <div class="crm-search-results">
 
-          {include file="CRM/Postnummer/Page/pager.tpl" location="top"}
+          {include file="CRM/common/pager.tpl" location="top"}
             {strip}
             <table class="selector" summary="{ts}Search results listings.{/ts}">
                 <thead class="sticky">
@@ -73,6 +79,7 @@
                         </th>
                     {/foreach}
                     <th>&nbsp;</th>
+                    <th>&nbsp;</th>
                     </tr>
                 </thead>
 
@@ -84,14 +91,18 @@
                             <td>{$row.$fName}</td>
                         {/foreach}
                         {capture assign=edit_url}{crmURL p='civicrm/postnummer' q="reset=1&action=edit&pc=`$row.post_code`"}{/capture}
+                        {capture assign=delete_url}{crmURL p='civicrm/postnummer' q="reset=1&action=delete&pc=`$row.post_code`"}{/capture}
                         <td><span>
                             <a class="action-item action-item-first" title="Edit Postcode" href="{$edit_url}">Edit</a>
+                        </span></td>
+                        <td><span>
+                            <a class="action-item action-item-last" title="Delete Postcode" href="{$delete_url}">Delete</a>
                         </span></td>
                     </tr>
                 {/foreach}
             </table>
             {/strip}
-            {include file="CRM/Postnummer/Page/pager.tpl" location="bottom"}
+            {include file="CRM/common/pager.tpl" location="bottom"}
             </p>
         {* END Actions/Results section *}
             </div>
@@ -99,10 +110,3 @@
     {/if}
 </div>
 {/if}
-{literal}
-    <script type="text/javascript">
-        cj(function() {
-            cj().crmAccordions();
-        });
-    </script>
-{/literal}

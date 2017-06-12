@@ -15,6 +15,7 @@ class CRM_Postnummer_Config {
   protected $importSettings = array();
   protected $translatedStrings = array();
   protected $defaultMapping = array();
+  protected $extsionMapper;
 
   /**
    * Constructor method
@@ -22,10 +23,13 @@ class CRM_Postnummer_Config {
    * @param string $context
    */
   function __construct($context) {
-    $settings = civicrm_api3('Setting', 'Getsingle', array());
-    $this->resourcesPath = $settings['extensionsDir'].'/no.maf.postnummer/resources/';
+    $sys = CRM_Extension_System::singleton();
+    $this->extsionMapper = $sys->getMapper();
+
+    $basePath = $this->extsionMapper->keyToBasePath('no.maf.postnummer');
+    $this->resourcesPath = $basePath.'/resources/';
     $this->setImportSettings();
-    $this->importPath = $settings['customFileUploadDir'].$this->importSettings['import_location']['value'];
+    $this->importPath = CRM_Core_Config::singleton()->customFileUploadDir.$this->importSettings['import_location']['value'];
     $this->setDefaultMapping();
   }
 

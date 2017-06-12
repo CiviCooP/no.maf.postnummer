@@ -8,6 +8,7 @@
           cj("#address_1_state_province_id option").filter(function() {
             return cj(this).val() == data.county_id;
           }).prop("selected", true);
+          cj("#address_1_state_province_id").trigger('change');
         }
       });
   });
